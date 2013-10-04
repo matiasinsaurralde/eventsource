@@ -14,6 +14,7 @@ type eventMessage struct {
 	id    string
 	event string
 	data  string
+	hash string
 }
 
 type eventSource struct {
@@ -57,7 +58,7 @@ type EventSource interface {
 	http.Handler
 
 	// send message to all consumers
-	SendMessage(data, event, id string)
+	SendMessage(data, event, id, hash string)
 
 	// consumers count
 	ConsumersCount() int
@@ -99,7 +100,7 @@ func controlProcess(es *eventSource) {
 				c := e.Value.(*consumer)
 
 				// Only send this message if the consumer isn't staled
-				if !c.staled {
+				if ( !c.staled && c.hash == em.hash ) {
 					select {
 					case c.in <- message:
 					default:
@@ -175,10 +176,13 @@ func (es *eventSource) ProcessMessages() {
 
 		if len(event) > 0 {
 			fmt.Println( event )
+			c.es.SendMessage( "document", "testevent", "data...", c.hash  )
 		}
 
+		//c.es.SendMessage("test", "eef", "asas")
+
 	}
-	es.SendMessage( "test", "event", "someid" )
+	//es.SendMessage( "test", "event", "someid" )
 	return
 }
 
@@ -186,8 +190,8 @@ func (es *eventSource) sendEventMessage(e *eventMessage) {
 	es.sink <- e
 }
 
-func (es *eventSource) SendMessage(data, event, id string) {
-	em := &eventMessage{id, event, data}
+func (es *eventSource) SendMessage(id, event, data, hash string) {
+	em := &eventMessage{id, event, data, hash}
 	es.sendEventMessage(em)
 }
 
