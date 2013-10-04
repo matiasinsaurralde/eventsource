@@ -156,21 +156,22 @@ func (es *eventSource) Close() {
 	es.close <- true
 }
 
-// ServeHTTP implements http.Handler interface.
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	cons, err := newConsumer(resp, es, req)
-	log.Print("serverhttp: ")
-	if err != nil {
-		log.Print("Can't create connection to a consumer: ", err)
-		return
-	}
+//	log.Print("serverhttp: ")
+//	if err != nil {
+//		log.Print("Can't create connection to a consumer: ", err)
+//		return
+//	}
 	es.add <- cons
 }
 
 func (es *eventSource) ProcessMessages() {
 	for e := es.consumers.Front(); e != nil; e = e.Next() {
 		c := e.Value.(*consumer)
+
 		fmt.Println( "Client hash: ", c.hash )
+
 	}
 	es.SendMessage( "asasas", "event", "someid" )
 	return
