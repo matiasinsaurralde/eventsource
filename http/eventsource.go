@@ -171,7 +171,11 @@ func (es *eventSource) ProcessMessages() {
 
 		//fmt.Println( "Client hash: ", c.hash )
 
-		fmt.Println( c.checkForEvents() )
+		event := c.checkForEvents()
+
+		if len(event) > 0 {
+			fmt.Println( event )
+		}
 
 	}
 	es.SendMessage( "test", "event", "someid" )

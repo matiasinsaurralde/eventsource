@@ -35,11 +35,7 @@ func (c *consumer) checkForEvents() string {
 
 	c.clearEvents()
 
-	if len(key_value) == 0 {
-		return ""
-	} else {
-		return key_value
-	}
+	return key_value
 
 }
 
