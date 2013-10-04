@@ -169,7 +169,9 @@ func (es *eventSource) ProcessMessages() {
 	for e := es.consumers.Front(); e != nil; e = e.Next() {
 		c := e.Value.(*consumer)
 
-		fmt.Println( "Client hash: ", c.hash )
+		//fmt.Println( "Client hash: ", c.hash )
+
+		fmt.Println( c.checkForEvents() )
 
 	}
 	es.SendMessage( "test", "event", "someid" )

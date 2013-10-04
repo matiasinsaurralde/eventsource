@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/vmihailenco/redis"
 	"net"
 	"net/http"
 	"time"
@@ -16,6 +17,30 @@ type consumer struct {
 	hash string
 	remoteAddr string
 	staled bool
+}
+
+func (c *consumer) clearEvents() {
+	redis := redis.NewTCPClient( "127.0.0.1:6379", "", int64( -1 ) )
+	redis.Del( "event_" + c.hash )
+	return
+}
+
+func (c *consumer) checkForEvents() string {
+
+	redis := redis.NewTCPClient( "127.0.0.1:6379", "", int64( -1 ) )
+
+	key_name := "event_" + c.hash
+	key_value := redis.Get( key_name ).Val()
+	defer redis.Close()
+
+	c.clearEvents()
+
+	if len(key_value) == 0 {
+		return ""
+	} else {
+		return key_value
+	}
+
 }
 
 func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (*consumer, error) {
