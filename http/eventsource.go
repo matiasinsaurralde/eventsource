@@ -152,7 +152,7 @@ func (es *eventSource) Close() {
 
 // ServeHTTP implements http.Handler interface.
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	cons, err := newConsumer(resp, es)
+	cons, err := newConsumer(resp, es, req)
 	if err != nil {
 		log.Print("Can't create connection to a consumer: ", err)
 		return

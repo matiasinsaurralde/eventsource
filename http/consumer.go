@@ -13,7 +13,7 @@ type consumer struct {
 	staled bool
 }
 
-func newConsumer(resp http.ResponseWriter, es *eventSource) (*consumer, error) {
+func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (*consumer, error) {
 	conn, _, err := resp.(http.Hijacker).Hijack()
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource) (*consumer, error) {
 		staled: false,
 	}
 
-	_, err = conn.Write([]byte("HTTP/1.1 200 OK\nContent-Type: text/event-stream\nX-Accel-Buffering: no\n\n"))
+	_, err = conn.Write([]byte("HTTP/1.1 200 OK\nContent-Type: text/event-stream\nX-Accel-Buffering: no\nAccess-Control-Allow-Methods: GET\nAccess-Control-Allow-Credentials: true\nAccess-Control-Allow-Origin: " + req.Header.Get("Origin") + "\n\n"))
 	if err != nil {
 		conn.Close()
 		return nil, err
@@ -42,7 +42,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource) (*consumer, error) {
 					consumer.staled = true
 					consumer.conn.Close()
 					consumer.es.staled <- consumer
-          return
+					return
 				}
 			}
 		}
