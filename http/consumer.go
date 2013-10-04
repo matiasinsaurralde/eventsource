@@ -14,6 +14,7 @@ type consumer struct {
 	in     chan []byte
 	request	string
 	hash string
+	remoteAddr string
 	staled bool
 }
 
@@ -27,7 +28,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (
 	hash := strings.Replace( req.URL.Path, "/", "", -1 )
 
 	if len(hash) == 40 {
-		log.Print( "[ ", req.RemoteAddr, " ] ", "Accepting connection." )
+		log.Print( "[ ", req.RemoteAddr, " ] @", hash, " Accepting connection." )
 	} else {
 		log.Print( "[ ", req.RemoteAddr, " ] ", "Invalid hash, dropping connection." )
 		conn.Close()
@@ -39,6 +40,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (
 		in:     make(chan []byte, 10),
 		request:	req.URL.RawQuery,
 		hash:	hash,
+		remoteAddr: req.RemoteAddr,
 		staled: false,
 	}
 
