@@ -4,6 +4,8 @@ import (
 	"net"
 	"net/http"
 	"time"
+	"strings"
+	"log"
 )
 
 type consumer struct {
@@ -22,12 +24,21 @@ func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (
 		return nil, err
 	}
 
+	hash := strings.Replace( req.URL.Path, "/", "", -1 )
+
+	if len(hash) == 40 {
+		log.Print( "[ ", req.RemoteAddr, " ] ", "Accepting connection." )
+	} else {
+		log.Print( "[ ", req.RemoteAddr, " ] ", "Invalid hash, dropping connection." )
+		conn.Close()
+	}
+
 	consumer := &consumer{
 		conn:   conn,
 		es:     es,
 		in:     make(chan []byte, 10),
 		request:	req.URL.RawQuery,
-		hash:	req.URL.Path,
+		hash:	hash,
 		staled: false,
 	}
 
