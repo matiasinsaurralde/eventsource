@@ -158,7 +158,6 @@ func (es *eventSource) Close() {
 
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	cons, err := newConsumer(resp, es, req)
-//	log.Print("serverhttp: ")
 	if err != nil {
 		//log.Print("Can't create connection to a consumer: ", err)
 		return
@@ -173,7 +172,7 @@ func (es *eventSource) ProcessMessages() {
 		fmt.Println( "Client hash: ", c.hash )
 
 	}
-	es.SendMessage( "asasas", "event", "someid" )
+	es.SendMessage( "test", "event", "someid" )
 	return
 }
 
