@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"container/list"
 	"fmt"
-	"log"
+//	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -159,10 +159,10 @@ func (es *eventSource) Close() {
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	cons, err := newConsumer(resp, es, req)
 //	log.Print("serverhttp: ")
-//	if err != nil {
-//		log.Print("Can't create connection to a consumer: ", err)
-//		return
-//	}
+	if err != nil {
+		//log.Print("Can't create connection to a consumer: ", err)
+		return
+	}
 	es.add <- cons
 }
 
