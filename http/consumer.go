@@ -10,11 +10,13 @@ type consumer struct {
 	conn   net.Conn
 	es     *eventSource
 	in     chan []byte
+	request	string
 	staled bool
 }
 
 func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (*consumer, error) {
 	conn, _, err := resp.(http.Hijacker).Hijack()
+
 	if err != nil {
 		return nil, err
 	}
@@ -23,6 +25,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (
 		conn:   conn,
 		es:     es,
 		in:     make(chan []byte, 10),
+		request:	req.URL.RawQuery,
 		staled: false,
 	}
 

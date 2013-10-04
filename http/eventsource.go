@@ -62,6 +62,12 @@ type EventSource interface {
 	// consumers count
 	ConsumersCount() int
 
+	// consumers
+	ConsumerList() *list.List
+
+	// process messages
+	ProcessMessages()
+
 	// close and clear all consumers
 	Close()
 }
@@ -153,11 +159,22 @@ func (es *eventSource) Close() {
 // ServeHTTP implements http.Handler interface.
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	cons, err := newConsumer(resp, es, req)
+	log.Print("serverhttp: ")
+	log.Print( req.URL.Path )
 	if err != nil {
 		log.Print("Can't create connection to a consumer: ", err)
 		return
 	}
 	es.add <- cons
+}
+
+func (es *eventSource) ProcessMessages() {
+	for e := es.consumers.Front(); e != nil; e = e.Next() {
+		c := e.Value.(*consumer)
+		fmt.Println( c.request )
+	}
+	es.SendMessage( "asasas", "event", "someid" )
+	return
 }
 
 func (es *eventSource) sendEventMessage(e *eventMessage) {
@@ -171,4 +188,8 @@ func (es *eventSource) SendMessage(data, event, id string) {
 
 func (es *eventSource) ConsumersCount() int {
 	return es.consumers.Len()
+}
+
+func (es *eventSource ) ConsumerList() *list.List {
+	return es.consumers
 }
