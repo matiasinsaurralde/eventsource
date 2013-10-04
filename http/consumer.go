@@ -11,6 +11,7 @@ type consumer struct {
 	es     *eventSource
 	in     chan []byte
 	request	string
+	hash string
 	staled bool
 }
 
@@ -26,6 +27,7 @@ func newConsumer(resp http.ResponseWriter, es *eventSource, req *http.Request) (
 		es:     es,
 		in:     make(chan []byte, 10),
 		request:	req.URL.RawQuery,
+		hash:	req.URL.Path,
 		staled: false,
 	}
 
