@@ -160,7 +160,6 @@ func (es *eventSource) Close() {
 func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	cons, err := newConsumer(resp, es, req)
 	log.Print("serverhttp: ")
-	log.Print( req.URL.Path )
 	if err != nil {
 		log.Print("Can't create connection to a consumer: ", err)
 		return
@@ -171,7 +170,7 @@ func (es *eventSource) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 func (es *eventSource) ProcessMessages() {
 	for e := es.consumers.Front(); e != nil; e = e.Next() {
 		c := e.Value.(*consumer)
-		fmt.Println( c.request )
+		fmt.Println( "Client hash: ", c.hash )
 	}
 	es.SendMessage( "asasas", "event", "someid" )
 	return
