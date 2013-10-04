@@ -170,12 +170,9 @@ func (es *eventSource) ProcessMessages() {
 	for e := es.consumers.Front(); e != nil; e = e.Next() {
 		c := e.Value.(*consumer)
 
-		//fmt.Println( "Client hash: ", c.hash )
-
 		event := c.checkForEvents()
 
 		if len(event) > 0 {
-			fmt.Println( event )
 			c.es.SendMessage( "document", "testevent", "data...", c.hash  )
 		}
 
